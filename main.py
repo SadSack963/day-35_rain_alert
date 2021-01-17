@@ -1,12 +1,15 @@
 # OpenWeatherMap
 # https://github.com/SadSack963/day-35_rain_alert.git
 
-import os
 import requests
 import json
 import send_sms
+import os
+from dotenv import load_dotenv
 
-api_key = os.environ.get("APIKey-OpenWeatherMap-Python")
+
+load_dotenv("E:/Python/EnvironmentVariables/.env")
+api_key = os.getenv("APIKey-OpenWeatherMap-Python")
 city_name = "Milton Keynes"
 lon = -0.7558
 lat = 52.0417
