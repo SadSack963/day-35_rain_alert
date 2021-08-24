@@ -4,21 +4,44 @@
 import requests
 import json
 import send_sms
+import winsound
+from urllib.request import urlretrieve
+
 import os
 from dotenv import load_dotenv
 
 
+def talk(message):
+    # Thanks to Alieksiei for this idea
+    # https://www.udemy.com/course/100-days-of-code/learn/#questions/15686144
+
+    # http://voicerss.org/api/
+    TTS_URL = "https://api.voicerss.org/"
+    params = {
+        'key': TTS_api_key,
+        'src': message,
+        'hl': 'en-gb',
+        'v': 'Nancy',  # Voices for en-gb: Alice (default), Nancy, Lily, Harry
+        'c': 'WAV'  # Codec: MP3, WAV (default), AAC, AGG, CAF
+    }
+    response = requests.get(TTS_URL, params=params)
+    response.raise_for_status()
+    urlretrieve(response.url, "speech.wav")
+    winsound.PlaySound("speech.wav", winsound.SND_NODEFAULT)
+
+
 load_dotenv("E:/Python/EnvironmentVariables/.env")
-api_key = os.getenv("APIKey-OpenWeatherMap-Python")
+TTS_api_key = os.getenv("TTS_API_Key")
+OWM_api_key = os.getenv("APIKey-OpenWeatherMap-Python")
 city_name = "Milton Keynes"
 lon = -0.7558
 lat = 52.0417
 
-current_url = "https://api.openweathermap.org/data/2.5/weather"
+current_url = "data/2.5/weather"
 current_parameters = {
     "q": city_name,
     "units": "metric",
-    "appid": api_key
+    "appid": OWM_api_key
 }
 
 one_call_url = "https://api.openweathermap.org/data/2.5/onecall"
@@ -27,7 +50,7 @@ one_call_parameters = {
     "lon": lon,
     "exclude": "current,minutely,daily",
     "units": "metric",
-    "appid": api_key
+    "appid": OWM_api_key
 }
 
 response = requests.get(url=one_call_url, params=one_call_parameters, timeout=1)
@@ -52,5 +75,6 @@ for hour in data_slice:
         if weather["id"] < 700:
             message = f"{weather['description']} - Take an umbrella"
             print(message)
+            talk(message)
             # send_sms.send_sms(message)
             break
