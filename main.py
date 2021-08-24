@@ -37,12 +37,19 @@ city_name = "Milton Keynes"
 lon = -0.7558
 lat = 52.0417
 
-current_url = "data/2.5/weather"
+current_url = "https://api.openweathermap.org/data/2.5/weather"
 current_parameters = {
     "q": city_name,
     "units": "metric",
     "appid": OWM_api_key
 }
+
+response = requests.get(url=current_url, params=current_parameters, timeout=1)
+response.raise_for_status()
+
+data = response.json()
+print(f'current {data = }')
+
 
 one_call_url = "https://api.openweathermap.org/data/2.5/onecall"
 one_call_parameters = {
@@ -57,7 +64,7 @@ response = requests.get(url=one_call_url, params=one_call_parameters, timeout=1)
 response.raise_for_status()
 
 data = response.json()
-print(data)
+print(f'one_call {data = }')
 
 with open("./data/one_call_data.json", mode="w") as file:
     json.dump(data, fp=file)
